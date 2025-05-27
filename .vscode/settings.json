@@ -1,0 +1,17 @@
+{
+    "python.pythonPath": "venv/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length", "88"],
+    "python.linting.flake8Args": [
+        "--max-line-length=88",
+        "--ignore=E501,W503"
+    ],
+    "editor.formatOnSave": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "cSpell.words": [
+        "dotenv"
+    ]
+}

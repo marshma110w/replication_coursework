@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "eamodio.gitlens",
+        "visualstudioexptteam.vscodeintellicode",
+        "donjayamanne.python-environment-manager",
+        "ms-azuretools.vscode-docker"
+    ]
+}

@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  postgres-master:
+    build:
+      context: ./master
+      dockerfile: Dockerfile
+    container_name: postgres-master
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./scripts:/scripts
+      - master-data:/var/lib/postgresql/data
+    networks:
+      - postgres-net
+
+  postgres-replica:
+    build:
+      context: ./replica
+      dockerfile: Dockerfile
+    container_name: postgres-replica
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: test_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./scripts:/scripts
+      - replica-data:/var/lib/postgresql/data
+    depends_on:
+      - postgres-master
+    networks:
+      - postgres-net
+    entrypoint: >
+      sh -c "
+        echo 'Starting PostgreSQL...' &&
+        /usr/local/bin/docker-entrypoint.sh postgres &
+        pid=$$!;
+        sleep 5;
+        until pg_isready -h postgres-master -p 5432 -U admin > /dev/null 2>&1; do
+          echo 'Waiting for master to be ready...';
+          sleep 2;
+        done;
+        echo 'Master is ready. Creating subscription...';
+        psql -U admin -d test_db -f /scripts/create_subscription.sql;
+        echo 'Subscription creation attempt finished.';
+        wait $$pid || exit 0
+      "
+
+volumes:
+  master-data:
+  replica-data:
+
+networks:
+  postgres-net:
+    driver: bridge
