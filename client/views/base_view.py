@@ -2,6 +2,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from sql_manager import PostgreSQLManager
+import tkinter.font as tkfont
 
 
 class BaseView(ttk.Frame):
@@ -13,13 +14,17 @@ class BaseView(ttk.Frame):
         self.editable_fields = editable_fields
         self.foreign_keys = foreign_keys or {}
 
+        self.font = tkfont.nametofont("TkDefaultFont")  # Используется для расчёта ширины текста
+        self.min_column_width = 100
+        self.max_column_width = 300
+
         self.create_widgets()
 
     def create_widgets(self):
         self.tree = ttk.Treeview(self, columns=self.columns, show='headings')
         for col in self.columns:
             self.tree.heading(col, text=col)
-            self.tree.column(col, width=100)
+
         self.tree.pack(fill='both', expand=True)
 
         self.load_data()
@@ -44,6 +49,26 @@ class BaseView(ttk.Frame):
         result = self.manager.execute_query(query, use_replica=True, fetch=True)
         for record in result:
             self.tree.insert('', 'end', values=tuple(record[col] for col in self.columns), tags=(record['id'],))
+
+        self.adjust_column_widths()
+
+    def adjust_column_width(self, column, data_samples):
+        max_width = max(
+            self.font.measure(str(value)) + 20  # добавляем отступ
+            for value in [column] + [row[column] for row in data_samples]
+        )
+        max_width = max(max_width, self.min_column_width)
+        max_width = min(max_width, self.max_column_width)
+        self.tree.column(column, width=int(max_width))
+
+    def adjust_column_widths(self):
+        data_samples = []
+        for child in self.tree.get_children():
+            values = self.tree.item(child)['values']
+            data_samples.append({col: values[i] for i, col in enumerate(self.columns)})
+
+        for col in self.columns:
+            self.adjust_column_width(col, data_samples)
 
     def open_add_window(self):
         self.open_edit_window()

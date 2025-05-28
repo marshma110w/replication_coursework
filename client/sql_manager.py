@@ -18,7 +18,7 @@ class PostgreSQLManager:
     ) -> list[dict] | int | None:
         """
         Выполняет SQL запрос на master или replica
-        
+
         :param query: SQL запрос
         :param use_replica: использовать реплику
         :param params: параметры для запроса
@@ -27,7 +27,9 @@ class PostgreSQLManager:
         """
         config = self.replica_config if use_replica else self.master_config
         result = None
-        
+
+        print(f"[Q] {query}")
+
         try:
             with psycopg2.connect(**config, cursor_factory=DictCursor) as conn:
                 with conn.cursor() as cursor:
@@ -37,7 +39,7 @@ class PostgreSQLManager:
         except psycopg2.Error as e:
             print(f"Error executing query: {e}")
             raise
-        
+
         return result
 
     def execute_script(self, script_path: str, use_replica: bool = False) -> None:
@@ -45,10 +47,10 @@ class PostgreSQLManager:
         try:
             with open(script_path, 'r') as f:
                 queries = [q.strip() for q in f.read().split(';') if q.strip()]
-            
+
             for query in queries:
                 self.execute_query(query, use_replica=use_replica)
-                
+
             print(f"Script {script_path} executed successfully")
         except Exception as e:
             print(f"Error executing script {script_path}: {e}")
