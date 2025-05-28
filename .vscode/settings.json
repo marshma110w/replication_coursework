@@ -4,7 +4,10 @@
     "python.linting.pylintEnabled": true,
     "python.linting.flake8Enabled": true,
     "python.formatting.provider": "black",
-    "python.formatting.blackArgs": ["--line-length", "88"],
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "88"
+    ],
     "python.linting.flake8Args": [
         "--max-line-length=88",
         "--ignore=E501,W503"
@@ -13,5 +16,8 @@
     "python.analysis.typeCheckingMode": "basic",
     "cSpell.words": [
         "dotenv"
+    ],
+    "flake8.args": [
+        "--max-line-length=120"
     ]
 }
