@@ -92,16 +92,16 @@ class ShipmentForm(ttk.Frame):
             item_frame.pack(fill='x', pady=2)
 
             check_var = tk.BooleanVar()
-            spin_var = tk.IntVar(value=0)
+            spin_var = tk.IntVar(value=1)
 
-            def on_check(item_frame=item_frame, check_var=check_var, spin_var=spin_var):
-                item_frame.children['!spinbox'].config(state='normal' if check_var.get() else 'disabled')
+            def on_check(cf=check_var, sb=None):
+                sb.config(state='normal' if cf.get() else 'disabled')
 
             check = ttk.Checkbutton(
                 item_frame,
-                text=f"{name} (осталось: {quantity})",
+                text=f"{name} (ID: {item_id}, осталось: {quantity})",
                 variable=check_var,
-                command=on_check
+                command=lambda cf=check_var, sf=spin_var: on_check(cf, sf)
             )
             check.pack(side='left', padx=5)
 
@@ -114,6 +114,9 @@ class ShipmentForm(ttk.Frame):
                 state='disabled'
             )
             spinbox.pack(side='right', padx=5)
+
+            # Привязываем спинбокс к функции
+            check.configure(command=lambda cf=check_var, sf=spin_var, sb=spinbox: on_check(cf, sb=sb))
 
             self.item_vars.append((item_id, check_var, spin_var))
 
