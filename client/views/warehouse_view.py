@@ -1,9 +1,10 @@
 # views/warehouse_view.py
-from .base_view import BaseView
+from views.base_view import BaseView
 
 
 class WarehouseView(BaseView):
     def __init__(self, parent):
-        columns = ['id', 'name', 'address', 'contact_phone', 'capacity', 'is_active']
-        editable_fields = ['name', 'address', 'contact_phone', 'capacity', 'is_active']
-        super().__init__(parent, 'warehouses', columns, editable_fields)
+        super().__init__(parent, 'warehouses', ['id', 'name', 'address', 'contact_phone', 'capacity', 'is_active'])
+
+    def get_fields(self):
+        return ['name', 'address', 'contact_phone', 'capacity', 'is_active']

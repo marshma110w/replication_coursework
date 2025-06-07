@@ -1,9 +1,10 @@
 # views/item_category_view.py
-from .base_view import BaseView
+from views.base_view import BaseView
 
 
 class ItemCategoryView(BaseView):
     def __init__(self, parent):
-        columns = ['id', 'name', 'description']
-        editable_fields = ['name', 'description']
-        super().__init__(parent, 'item_categories', columns, editable_fields)
+        super().__init__(parent, 'item_categories', ['id', 'name', 'description'])
+
+    def get_fields(self):
+        return ['name', 'description']
