@@ -106,4 +106,4 @@ class PostgreSQLManager:
         else:
             sql_with_values = query
 
-        print(f"[{source}] {sql_with_values}")
+        # print(f"[{source}] {sql_with_values}")
