@@ -1,76 +1,60 @@
 # main.py
 import tkinter as tk
 from tkinter import ttk
+
+# Импортируем View-классы
 from views.item_category_view import ItemCategoryView
 from views.warehouse_view import WarehouseView
 from views.item_view import ItemView
 from views.employee_view import EmployeeView
-from views.connection_status_bar import ConnectionStatusBar
 from views.shipment_view import ShipmentView
+from views.connection_status_bar import ConnectionStatusBar
 
 
 class MainApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Инвентаризация")
+        self.root.title("Распределение нагрузки через репликацию")
         self.root.geometry("800x600")
 
-        self.create_menu()
-
-    def create_menu(self):
-        menu = tk.Menu(self.root)
-        self.root.config(menu=menu)
-
-        entities_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="Сущности", menu=entities_menu)
-
-        entities_menu.add_command(label="Категории товаров", command=self.open_item_category)
-        entities_menu.add_command(label="Склады", command=self.open_warehouse)
-        entities_menu.add_command(label="Товары", command=self.open_item)
-        entities_menu.add_command(label="Сотрудники", command=self.open_employee)
-
-        entities_menu.add_command(label="Выдачи", command=self.open_shipment)
-
         # Статус подключения
-        status_frame = ttk.Frame(self.root)
-        status_frame.pack(side='bottom', fill='x')
-        self.status_bar = ConnectionStatusBar(status_frame)
-        self.status_bar.pack()
+        self.status_bar = ConnectionStatusBar(self.root)
+        self.status_bar.pack(side='bottom', fill='x')
 
-    def open_item_category(self):
-        window = tk.Toplevel(self.root)
-        window.geometry('1000x600')
-        ItemCategoryView(window).pack(fill='both', expand=True)
+        # Центральная панель с кнопками
+        self.create_main_buttons()
 
-    def open_warehouse(self):
-        window = tk.Toplevel(self.root)
-        window.geometry('1000x600')
-        WarehouseView(window).pack(fill='both', expand=True)
+    def create_main_buttons(self):
+        frame = ttk.Frame(self.root)
+        frame.pack(expand=True, fill='both', padx=20, pady=20)
 
-    def open_item(self):
-        window = tk.Toplevel(self.root)
-        window.geometry('1000x600')
-        ItemView(window).pack(fill='both', expand=True)
+        ttk.Label(frame, text="Выберите раздел", font=("Arial", 14, "bold")).pack(pady=10)
 
-    def open_employee(self):
-        window = tk.Toplevel(self.root)
-        window.geometry('1000x600')
-        EmployeeView(window).pack(fill='both', expand=True)
+        buttons = [
+            ("Категории товаров", ItemCategoryView),
+            ("Склады", WarehouseView),
+            ("Товары", ItemView),
+            ("Сотрудники", EmployeeView),
+            ("Выдачи", ShipmentView),
+        ]
 
-    def open_shipment(self):
+        for name, view_class in buttons:
+            button = ttk.Button(
+                frame,
+                text=name,
+                command=lambda cls=view_class: self.open_window(cls)
+            )
+            button.pack(fill='x', pady=5)
+
+    def open_window(self, view_class):
         window = tk.Toplevel(self.root)
-        window.geometry("1200x600")
-        ShipmentView(window).pack(fill='both', expand=True)
+        window.title(f"Работа с {view_class.__name__}")
+        window.geometry("1000x600")
+
+        view_class(window).pack(fill='both', expand=True)
 
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = MainApp(root)
-
-    # Поднимаем окно наверх и даём ему фокус
-    root.lift()
-    root.attributes("-topmost", True)
-    root.after_idle(root.attributes, "-topmost", False)
-    root.focus_force()
-
     root.mainloop()
